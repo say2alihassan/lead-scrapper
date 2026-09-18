@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, Table2, LayoutGrid } from "lucide-react";
 import LeadTabs from "@/components/LeadTabs";
+import LeadsTable from "@/components/LeadsTable";
 import ExportButton from "@/components/ExportButton";
 import { useLeads } from "@/lib/leadsStore";
 
 export default function MyLeadsPage() {
   const { leads, lastQuery, seenIds } = useLeads();
+  const [view, setView] = useState("table"); // table | cards
 
   return (
     <div className="max-w-7xl mx-auto px-5 sm:px-8 py-8">
@@ -18,7 +21,29 @@ export default function MyLeadsPage() {
             {leads.length > 0 ? `${leads.length} leads discovered${lastQuery ? ` for "${lastQuery}"` : ""}` : "Leads you've discovered will show up here"}
           </p>
         </div>
-        {leads.length > 0 && <ExportButton leads={leads} />}
+        {leads.length > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+              <button
+                onClick={() => setView("table")}
+                className={`flex items-center gap-1.5 text-[11px] font-600 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                  view === "table" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <Table2 size={12} /> Table
+              </button>
+              <button
+                onClick={() => setView("cards")}
+                className={`flex items-center gap-1.5 text-[11px] font-600 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                  view === "cards" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <LayoutGrid size={12} /> Cards
+              </button>
+            </div>
+            <ExportButton leads={leads} />
+          </div>
+        )}
       </div>
 
       {leads.length === 0 ? (
@@ -37,6 +62,8 @@ export default function MyLeadsPage() {
             Search Leads <ArrowRight size={14} />
           </Link>
         </div>
+      ) : view === "table" ? (
+        <LeadsTable leads={leads} query={lastQuery} seenIds={seenIds} />
       ) : (
         <LeadTabs leads={leads} query={lastQuery} seenIds={seenIds} />
       )}
