@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeadScraper
 
-## Getting Started
+A Next.js 14 app that finds business leads using the Google Maps Places API, scores them, and splits them into **App Dev** and **Web Service** categories.
 
-First, run the development server:
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Setup: Google Maps API Key
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project (or select existing)
+3. Navigate to **APIs & Services → Library**
+4. Enable both:
+   - **Places API** (Legacy)
+   - **Maps JavaScript API** (optional, for future map view)
+5. Go to **APIs & Services → Credentials**
+6. Click **Create Credentials → API Key**
+7. (Recommended) Restrict the key to your server IP and the Places API
+8. Copy the key into `.env.local`:
 
-## Learn More
+```
+GOOGLE_MAPS_API_KEY=AIza...your_key_here
+```
 
-To learn more about Next.js, take a look at the following resources:
+9. Restart the dev server: `npm run dev`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Example Searches
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Query | What you'll find |
+|---|---|
+| `restaurants in Gulberg Lahore` | Restaurant leads in Lahore |
+| `salons in Dubai` | Beauty salon leads in Dubai |
+| `gyms in Karachi` | Fitness center leads |
+| `dental clinics in London` | Dental practice leads |
+| `hotels in Bangkok` | Hotel/hospitality leads |
+| `retail shops in Islamabad` | Retail store leads |
+| `real estate agents in Karachi` | Property agency leads |
 
-## Deploy on Vercel
+## Lead Scoring
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each lead is scored 0–100 based on:
+- **Review count** (up to +30 points)
+- **Rating** (up to +20 points)
+- **Has phone number** (+10 points)
+- **Has opening hours** (+5 points)
+- **Bonus** for high review count + high rating (+10 points)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Verdict:**
+- `STRONG` — High-priority lead, worth pursuing immediately
+- `MAYBE` — Moderate potential, worth a follow-up
+- `SKIP` — Low priority
+
+## Tabs
+
+- **App Dev Leads** — Businesses WITH a website. Pitch them a mobile app.
+- **Web Service Leads** — Businesses WITHOUT a website. Pitch web development.
+
+## Export
+
+Click **Export CSV** to download all leads as a spreadsheet, ready for outreach.
+
+## Tech Stack
+
+- [Next.js 14](https://nextjs.org/) App Router
+- [Tailwind CSS](https://tailwindcss.com/) v4
+- [shadcn/ui](https://ui.shadcn.com/) components
+- Google Maps Places API (Legacy)
+
+# lead-scrapper
