@@ -4,7 +4,7 @@ import { extractCity, buildAreaQueries } from "@/lib/cityAreas";
 const MAPS_KEY = process.env.GOOGLE_MAPS_API_KEY;
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const DETAILS_FIELDS =
-  "name,formatted_phone_number,website,rating,user_ratings_total,types,opening_hours,business_status,url,formatted_address";
+  "place_id,name,formatted_phone_number,website,rating,user_ratings_total,types,opening_hours,business_status,url,formatted_address";
 
 async function fetchJSON(url) {
   const res = await fetch(url);

@@ -11,11 +11,9 @@ import {
   Sparkles,
   AlertTriangle,
   SearchX,
-  Bookmark,
 } from "lucide-react";
 import LeadCard from "./LeadCard";
 import FilterBar, { DEFAULT_FILTERS, applyFilters } from "./FilterBar";
-import { useSaved, STATUSES } from "@/lib/savedLeads";
 
 const TABS = [
   {
@@ -91,35 +89,22 @@ function EmptyState({ description }) {
 export default function LeadTabs({ leads, query, seenIds }) {
   const [active, setActive] = useState("no_presence");
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const { savedList, setStatus } = useSaved();
-
-  const ALL_TABS = [
-    ...TABS,
-    {
-      id: "saved",
-      label: "Saved Leads",
-      icon: Bookmark,
-      description: "Your bookmarked leads",
-      accent: { text: "text-amber-600", badge: "bg-amber-100 text-amber-700", bar: "bg-amber-500", border: "border-amber-500" },
-    },
-  ];
 
   const byCategory = {};
   for (const tab of TABS) {
     byCategory[tab.id] = leads.filter((l) => l.category === tab.id);
   }
-  byCategory["saved"] = savedList;
 
-  const activeTab = ALL_TABS.find((t) => t.id === active);
+  const activeTab = TABS.find((t) => t.id === active);
   const rawLeads = byCategory[active] || [];
-  const activeLeads = active === "saved" ? rawLeads : applyFilters(rawLeads, filters);
+  const activeLeads = applyFilters(rawLeads, filters);
 
   return (
     <div className="w-full">
       {/* Scrollable tab bar */}
       <div className="overflow-x-auto -mx-1 px-1">
         <div className="flex items-end gap-0.5 border-b border-slate-200 mb-6 min-w-max">
-          {ALL_TABS.map((tab) => {
+          {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = active === tab.id;
             const count = byCategory[tab.id]?.length || 0;
@@ -147,25 +132,14 @@ export default function LeadTabs({ leads, query, seenIds }) {
         </div>
       </div>
 
-      {/* Filter bar — not shown on saved tab */}
-      {active !== "saved" && rawLeads.length > 0 && (
+      {/* Filter bar */}
+      {rawLeads.length > 0 && (
         <FilterBar
           filters={filters}
           onChange={setFilters}
           totalBefore={rawLeads.length}
           totalAfter={activeLeads.length}
         />
-      )}
-
-      {/* Saved tab status filter */}
-      {active === "saved" && savedList.length > 0 && (
-        <div className="flex gap-2 flex-wrap mb-4">
-          {STATUSES.map((s) => (
-            <span key={s} className="text-[11px] font-600 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
-              {s}: {savedList.filter((l) => l.savedStatus === s).length}
-            </span>
-          ))}
-        </div>
       )}
 
       {/* Active tab description */}
